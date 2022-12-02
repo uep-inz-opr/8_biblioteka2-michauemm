@@ -7,21 +7,26 @@ class Biblioteka:
 
 
     def dostepne_egz(self, tytul):
+        lista = []
         for element in self.lista_egzemplarzy:
             if tytul == element.tytul and element.wypozyczony == False:
-                lista = []
                 lista.append(element)
-        return lista
+        if len(lista) >= 1:
+            return lista
+        else:
+            return False
 
     def wypozycz(self, czytelnik, tytul):
+        # nie można wypożyczyć więcej niż 3
         if czytelnik.ilosc_wypozyczen >= 3:
-            # print("Nie mozna wypozyczyc wiecej niz 3")
             return False
+        # nie można wypożyczyć dwa razy tej samej
         for ksiazka in czytelnik.lista_wypozyczonych:
             if tytul in str(ksiazka):
-                # print("Nie można wypożyczyć tej samej książki dwa razy")
                 return False
         dostep = self.dostepne_egz(tytul)
+        if dostep == False:
+            return False
         czytelnik.lista_wypozyczonych.append(dostep.pop())
         czytelnik.lista_wypozyczonych[-1].wypozyczony = True
         czytelnik.ilosc_wypozyczen += 1
