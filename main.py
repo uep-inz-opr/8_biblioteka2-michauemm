@@ -48,6 +48,7 @@ class Biblioteka:
                         if tytul in str(el):
                             el.wypozyczony = False
                             element.ilosc_wypozyczen -= 1
+                            element.lista_wypozyczonych.remove(el)
                             self.wynik.append("True")
                         else:
                             pass
