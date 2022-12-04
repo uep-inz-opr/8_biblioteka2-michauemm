@@ -5,6 +5,7 @@ class Biblioteka:
         self.lista_ksiazek = []
         self.lista_czytelnikow = []
         self.wynik = []
+        self.temp = []
 
     def dostepne_egz(self, tytul):
         lista = []
@@ -17,57 +18,44 @@ class Biblioteka:
             return False
 
     def wypozycz(self, czytelnik, tytul):
-        if self.lista_czytelnikow:
-            for element in self.lista_czytelnikow:
-                if czytelnik in str(element):
-                    if element.ilosc_wypozyczen >= 3:
-                        self.wynik.append("False")
-                        return
-                    for ksiazka in element.lista_wypozyczonych:
-                        if tytul in str(ksiazka):
-                            self.wynik.append("False")
-                            return
-                    dostep = self.dostepne_egz(tytul)
-                    if dostep == False:
-                        self.wynik.append("False")
-                        return
-                    element.lista_wypozyczonych.append(dostep.pop())
-                    element.lista_wypozyczonych[-1].wypozyczony = True
-                    element.ilosc_wypozyczen += 1
-                    self.wynik.append("True")
-        else:
-            czytelnik = Czytelnik(czytelnik)
-            self.lista_czytelnikow.append(czytelnik)
-            if czytelnik.ilosc_wypozyczen >= 3:
-                self.wynik.append("False")
-                return
-            for ksiazka in czytelnik.lista_wypozyczonych:
-                if tytul in str(ksiazka):
+        for element in self.lista_czytelnikow:
+            if czytelnik in str(element):
+                if element.ilosc_wypozyczen >= 3:
                     self.wynik.append("False")
                     return
-            dostep = self.dostepne_egz(tytul)
-            if dostep == False:
-                self.wynik.append("False")
-                return
-            czytelnik.lista_wypozyczonych.append(dostep.pop())
-            czytelnik.lista_wypozyczonych[-1].wypozyczony = True
-            czytelnik.ilosc_wypozyczen += 1
-            self.wynik.append("True")
-        
+
+                for ksiazka in element.lista_wypozyczonych:
+                    if tytul in str(ksiazka):
+                        self.wynik.append("False")
+                        return
+
+                dostep = self.dostepne_egz(tytul)
+                if dostep == False:
+                    self.wynik.append("False")
+                    return
+                element.lista_wypozyczonych.append(dostep.pop())
+                element.lista_wypozyczonych[-1].wypozyczony = True
+                element.ilosc_wypozyczen += 1
+                self.wynik.append("True")
+            else:
+                pass
 
     def oddaj(self, czytelnik, tytul):
-        if self.lista_czytelnikow:
-            for element in self.lista_czytelnikow:
-                if czytelnik in str(element):
+        for element in self.lista_czytelnikow:
+            if czytelnik in str(element):
+                if tytul in str(element.lista_wypozyczonych):
                     for el in element.lista_wypozyczonych:
-                        if tytul in el.tytul:
+                        if tytul in str(el):
                             el.wypozyczony = False
                             element.ilosc_wypozyczen -= 1
                             self.wynik.append("True")
                         else:
-                            self.wynik.append("False")
-        else:
-            self.wynik.append("False")
+                            pass
+
+                else:
+                    self.wynik.append("False")
+            else:
+                pass
 
     def dodaj_egzemplarz_ksiazki(self, tytul, autor, rok_wydania):
         ksiazka = Ksiazka(tytul, autor)
@@ -111,9 +99,25 @@ class Czytelnik:
 
 def main():
     MojaBiblioteka = Biblioteka()
+
     n = int(input())
+    lista_inpt = []
+    temp =[]
+    z = 0
     for i in range(n):
-        x = eval(input().strip())
+        x = input()
+        lista_inpt.append(x)
+    for el in lista_inpt:
+        x = eval(str(el))
+        if "wypozycz" in str(x[0]):
+            czytelnik = x[1]
+            temp.append(czytelnik)
+    b = list(set(temp))
+    for el in b:
+        MojaBiblioteka.lista_czytelnikow.append(Czytelnik(el))
+
+    for el in lista_inpt:
+        x = eval(str(el))
         if "dodaj" in str(x[0]):
             tytul = x[1]
             autor = x[2]
@@ -130,9 +134,9 @@ def main():
             tytul = x[2]
             MojaBiblioteka.oddaj(czytelnik, tytul)
 
-
     for el in MojaBiblioteka.wynik:
         print(el)
 main()
+
 
 
